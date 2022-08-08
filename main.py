@@ -1,4 +1,5 @@
 # from pprint import pprint
+from bs4 import BeautifulSoup
 import requests
 import re
 from config import username,password,headers
@@ -58,10 +59,16 @@ def main():
             id.append(users['profile_pic_url']+'.jpg')
             ws.append(id)
     # pprint(response.text)
+    i=1
     wb.save(f'{uid}{date}{opt_title[option]}.xlsx')
     with open(f'{uid}{date}{opt_title[option]}.txt', 'w+',encoding='utf-8') as f:
-        reresponse = response.text.replace('\\u0026','&')
-        f.write(reresponse)
+        for users in root_json['users']:
+            id = (f'{i}','@'+users['username'], users['full_name'])
+            i+=1
+        # reresponse = response.text.replace('\\u0026','&')
+            f.write(str(id)+'\n')
+        f.write(f'Total: {i-1} records!')
+    print(f'Got {i-1} records!!!')
 
 if __name__ == '__main__':
     main()

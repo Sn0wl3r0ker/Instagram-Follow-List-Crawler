@@ -2,7 +2,7 @@
 from bs4 import BeautifulSoup
 import requests
 import re
-from config import username,password,headers
+from config import username,password,headers,url,ajax_url,p_url
 from datetime import datetime
 from openpyxl import Workbook
 
@@ -57,14 +57,8 @@ def main():
     fcount = str(input('Enter max num of following/followers: '))
     opt_title = {
         'following': 'fwi',
-        'followers': 'fwr',
-    }
-
+        'followers': 'fwr',}
     ask = ask_excel()
-
-    url = f'https://www.instagram.com/accounts/login/'
-    ajax_url = f'https://www.instagram.com/accounts/login/ajax/'
-    p_url = f'https://i.instagram.com/api/v1/users/web_profile_info/?username={uid}'
 
     with requests.session() as session:         #session = requests.sess.....
         res = session.get(url)
@@ -77,7 +71,7 @@ def main():
         session.post(ajax_url, data=payload, headers=headers, cookies=cookies)          #用現有cookie和csrf token 去取得登入的session
         # print(req2.text)
 
-        fsi=session.get(p_url,cookies=cookies,headers=headers)      
+        fsi=session.get(p_url+uid,cookies=cookies,headers=headers)      
         friendid = str(re.findall(r"id\":\"(.*?)\"",fsi.text)[1])   
         print("userid:",friendid)
         # print(fsi.text)
@@ -85,13 +79,12 @@ def main():
         # url的後輟 可以像翻頁一樣去增加再爬取 或是直接爆max來爬取
         params = {
         'count': fcount,
-        'max_id': ''
-        }
+        'max_id': ''}
         response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/', params=params, cookies=cookies, headers=headers)
         # print(response.text)
         root_json = response.json()
-        if(ask == 1):
-            do_excel(uid,date,opt_title,option,root_json)
+    if(ask == 1):
+        do_excel(uid,date,opt_title,option,root_json)
     # pprint(response.text)
     do_txt(uid,date,opt_title,option,root_json)
 

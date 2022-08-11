@@ -2,6 +2,10 @@
 username = 'USERNAME or EMAIL'
 password = 'PASSWORD'
 
+url = f'https://www.instagram.com/accounts/login/'
+ajax_url = f'https://www.instagram.com/accounts/login/ajax/'
+p_url = f'https://i.instagram.com/api/v1/users/web_profile_info/?username='
+
 headers = {
 'authority': 'www.instagram.com',
 'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',

@@ -1,5 +1,4 @@
 # from pprint import pprint
-from turtle import Turtle
 from bs4 import BeautifulSoup
 import requests
 import re

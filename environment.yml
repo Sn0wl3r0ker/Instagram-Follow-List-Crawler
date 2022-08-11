@@ -37,5 +37,5 @@ dependencies:
     - openpyxl==3.0.10
     - pysocks==1.7.1
     - setuptools==63.4.2
-prefix: /Users/sn0wl3r0ker/anaconda3/envs/ig_crawler
+
 

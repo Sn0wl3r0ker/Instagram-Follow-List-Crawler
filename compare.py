@@ -33,4 +33,6 @@ def compare_file(file1_name, file2_name):
 
 
 if __name__ == "__main__":
-    compare_file(r'FILENAME1.txt', r'FILENAME2.txt')
+    f1 = input(f'Enter first filename: ')+'.txt'
+    f2 = input(f'Enter second filename: ')
+    compare_file(f'{f1}.txt', f'{f2}.txt')

@@ -63,7 +63,8 @@ def main():
     wb.save(f'{uid}{date}{opt_title[option]}.xlsx')
     with open(f'{uid}{date}{opt_title[option]}.txt', 'w+',encoding='utf-8') as f:
         for users in root_json['users']:
-            id = (f'{i}','@'+users['username'], users['full_name'])
+            # id = (f'{i}','@'+users['username'], users['full_name'])
+            id = (f'@'+users['username'], users['full_name'])
             i+=1
         # reresponse = response.text.replace('\\u0026','&')
             f.write(str(id)+'\n')

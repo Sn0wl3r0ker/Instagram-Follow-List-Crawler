@@ -18,7 +18,7 @@ def ask_excel():
     elif(flag == 'no'):
         return 0
 
-def do_excel(uid,date,opt_title,option,root_json):
+def do_excel(uid,date,opt_title,option,root_json):              # 跑生成excel
     wb = Workbook()
     ws = wb.active
     title = ['username', 'full_name', 'profile_pic']
@@ -30,6 +30,18 @@ def do_excel(uid,date,opt_title,option,root_json):
         id.append(users['profile_pic_url']+'.jpg')
         ws.append(id)
     wb.save(f'{uid}{date}{opt_title[option]}.xlsx')
+
+def do_txt(uid,date,opt_title,option,root_json):                # 跑生成txt 
+    i=1
+    with open(f'{uid}{date}{opt_title[option]}.txt', 'w+',encoding='utf-8') as f:
+        for users in root_json['users']:
+            # id = (f'{i}','@'+users['username'], users['full_name'])
+            id = (f'@'+users['username'], users['full_name'])
+            i+=1
+        # reresponse = response.text.replace('\\u0026','&')
+            f.write(str(id)+'\n')
+        f.write(f'Total: {i-1} records!')
+    print(f'Got {i-1} records!!!')
 
 def main():
     date = datetime.now().strftime("%Y%m%d-%H%M")
@@ -57,17 +69,20 @@ def main():
     with requests.session() as session:         #session = requests.sess.....
         res = session.get(url)
         csrf = re.findall(r"csrf_token\":\"(.*?)\"",res.text)[0]
-        cookies = res.cookies
+        cookies = res.cookies                   #res獲取第一次cookie和csrf
         cookies['csrf'] = csrf
         headers['x-csrftoken'] = csrf
         headers['Referer'] = f'https://www.instagram.com/{uid}/following/'
         # print(cookies)
-        session.post(ajax_url, data=payload, headers=headers, cookies=cookies)
+        session.post(ajax_url, data=payload, headers=headers, cookies=cookies)          #用現有cookie和csrf token 去取得登入的session
         # print(req2.text)
-        fsi=session.get(p_url,cookies=cookies,headers=headers)
-        friendid = str(re.findall(r"id\":\"(.*?)\"",fsi.text)[1])
+
+        fsi=session.get(p_url,cookies=cookies,headers=headers)      
+        friendid = str(re.findall(r"id\":\"(.*?)\"",fsi.text)[1])   
         print("userid:",friendid)
         # print(fsi.text)
+
+        # url的後輟 可以像翻頁一樣去增加再爬取 或是直接爆max來爬取
         params = {
         'count': fcount,
         'max_id': ''
@@ -78,16 +93,7 @@ def main():
         if(ask == 1):
             do_excel(uid,date,opt_title,option,root_json)
     # pprint(response.text)
-    i=1
-    with open(f'{uid}{date}{opt_title[option]}.txt', 'w+',encoding='utf-8') as f:
-        for users in root_json['users']:
-            # id = (f'{i}','@'+users['username'], users['full_name'])
-            id = (f'@'+users['username'], users['full_name'])
-            i+=1
-        # reresponse = response.text.replace('\\u0026','&')
-            f.write(str(id)+'\n')
-        f.write(f'Total: {i-1} records!')
-    print(f'Got {i-1} records!!!')
+    do_txt(uid,date,opt_title,option,root_json)
 
 if __name__ == '__main__':
     main()

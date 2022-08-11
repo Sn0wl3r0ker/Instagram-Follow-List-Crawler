@@ -8,14 +8,16 @@ from openpyxl import Workbook
 
 def ask_excel():
     flag =''
-    accept_list = {'y':"yes",'Y':"yes",'n':"no",'N':"no"}
-    while flag not in accept_list:
+    yes_list = ['y','Y','yes']
+    no_list = ['n','N','no']
+    while flag not in yes_list and flag not in no_list:
         flag = input(f'Do u want excel file? y/n: ')
-        if(flag not in accept_list):
+        if(flag not in yes_list and flag not in no_list):
             print('plz enter y or n !!!')
-    if(flag == 'yes'):
+    print(f'flag={flag}')
+    if(flag in yes_list):
         return 1
-    elif(flag == 'no'):
+    elif(flag in no_list):
         return 0
 
 def do_excel(uid,date,opt_title,option,root_json):              # 跑生成excel
@@ -59,7 +61,7 @@ def main():
         'following': 'fwi',
         'followers': 'fwr',}
     ask = ask_excel()
-
+    print(ask)
     with requests.session() as session:         #session = requests.sess.....
         res = session.get(url)
         csrf = re.findall(r"csrf_token\":\"(.*?)\"",res.text)[0]

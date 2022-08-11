@@ -32,7 +32,7 @@ def compare_file(file1_name, file2_name):
         print('寫入html文件錯誤:{0}'.format(error))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     f1 = input(f'Enter first filename: ')+'.txt'
-    f2 = input(f'Enter second filename: ')
-    compare_file(f'{f1}.txt', f'{f2}.txt')
+    f2 = input(f'Enter second filename: ')+'.txt'
+    compare_file(f1, f2)

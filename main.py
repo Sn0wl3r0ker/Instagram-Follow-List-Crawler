@@ -1,4 +1,5 @@
 # from pprint import pprint
+from turtle import Turtle
 from bs4 import BeautifulSoup
 import requests
 import re
@@ -6,12 +7,32 @@ from config import username,password,headers
 from datetime import datetime
 from openpyxl import Workbook
 
+def ask_excel():
+    flag =''
+    accept_list = {'y':"yes",'Y':"yes",'n':"no",'N':"no"}
+    while flag not in accept_list:
+        flag = input(f'Do u want excel file? y/n: ')
+        if(flag not in accept_list):
+            print('plz enter y or n !!!')
+    if(flag == 'yes'):
+        return 1
+    elif(flag == 'no'):
+        return 0
 
-def main():
+def do_excel(uid,date,opt_title,option,root_json):
     wb = Workbook()
     ws = wb.active
     title = ['username', 'full_name', 'profile_pic']
     ws.append(title)
+    for users in root_json['users']:
+        id = []
+        id.append('@'+users['username'])
+        id.append(users['full_name'])
+        id.append(users['profile_pic_url']+'.jpg')
+        ws.append(id)
+    wb.save(f'{uid}{date}{opt_title[option]}.xlsx')
+
+def main():
     date = datetime.now().strftime("%Y%m%d-%H%M")
     time = int(datetime.now().timestamp())
     payload = {
@@ -27,6 +48,9 @@ def main():
         'following': 'fwi',
         'followers': 'fwr',
     }
+
+    ask = ask_excel()
+
     url = f'https://www.instagram.com/accounts/login/'
     ajax_url = f'https://www.instagram.com/accounts/login/ajax/'
     p_url = f'https://i.instagram.com/api/v1/users/web_profile_info/?username={uid}'
@@ -52,15 +76,10 @@ def main():
         response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/', params=params, cookies=cookies, headers=headers)
         # print(response.text)
         root_json = response.json()
-        for users in root_json['users']:
-            id = []
-            id.append('@'+users['username'])
-            id.append(users['full_name'])
-            id.append(users['profile_pic_url']+'.jpg')
-            ws.append(id)
+        if(ask == 1):
+            do_excel(uid,date,opt_title,option,root_json)
     # pprint(response.text)
     i=1
-    wb.save(f'{uid}{date}{opt_title[option]}.xlsx')
     with open(f'{uid}{date}{opt_title[option]}.txt', 'w+',encoding='utf-8') as f:
         for users in root_json['users']:
             # id = (f'{i}','@'+users['username'], users['full_name'])

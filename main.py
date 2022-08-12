@@ -93,7 +93,7 @@ def main():
     ask2 = ask_excel('compare with old file')
     if(ask2 == 1):
         f1 = input(f'Enter first filename(older file): ')+'.txt'
-        f2 = input(f'Enter second filename(newer file): ')+'.txt'
+        f2 = f'{uid}{date}{opt_title[option]}'+'.txt'
         compare.compare_file(f1, f2)
 
 if __name__ == '__main__':

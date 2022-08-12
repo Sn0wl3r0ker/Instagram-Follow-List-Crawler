@@ -1,7 +1,7 @@
 import sys
 import difflib
 
-# copy from: https://www.cnblogs.com/yizhipanghu/p/9674221.html
+# modify from: https://www.cnblogs.com/yizhipanghu/p/9674221.html
 
 # 讀取配置文件函數
 def read_file(file_name):

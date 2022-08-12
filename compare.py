@@ -23,11 +23,14 @@ def compare_file(file1_name, file2_name):
     text1_lines = read_file(file1_name)
     text2_lines = read_file(file2_name)
     print_list = ['+','-']
-    no_print_list = ['Total']
+    no_print_list = ['!']
     d = difflib.Differ()
-    diff_print = [a for a in d.compare(text1_lines, text2_lines) if a[0] in print_list and a[2:6] not in no_print_list]
+    diff_print = [a for a in d.compare(text1_lines, text2_lines) if a[0] in print_list and a[-1] not in no_print_list ]
     if diff_print:
-        print('\n'.join(diff_print[0:-2]))
+        print('record of compare will be storage in compared.txt and result.html !')
+        with open('compared.txt', 'w', encoding="utf-8") as result_file:
+            result_file.write('\n'.join(diff_print))
+        print('\n'.join(diff_print))
     else:
         print(f"It's all same as old file")
     diff = difflib.HtmlDiff()  # 創建htmldiff 對象

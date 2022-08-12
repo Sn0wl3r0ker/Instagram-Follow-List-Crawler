@@ -3,7 +3,6 @@ import difflib
 import os
 from config import path
 
-# modify from: https://www.cnblogs.com/yizhipanghu/p/9674221.html
 
 def create_folder(path):
     if not os.path.isdir(path):

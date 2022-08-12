@@ -2,10 +2,15 @@
 from bs4 import BeautifulSoup
 import requests
 import re
-from config import username,password,headers,url,ajax_url,p_url
+from config import username,password,headers,url,ajax_url,p_url,path
 from datetime import datetime
 from openpyxl import Workbook
 import compare
+import os
+
+def create_folder(path):
+    if not os.path.isdir(path):
+        os.makedirs(path)
 
 def ask_excel(ask_option):
     flag =''
@@ -21,7 +26,7 @@ def ask_excel(ask_option):
     elif(flag in no_list):
         return 0
 
-def do_excel(uid,date,opt_title,option,root_json):              # 跑生成excel
+def do_excel(uid,date,opt_title,option,root_json,path):              # 跑生成excel
     wb = Workbook()
     ws = wb.active
     title = ['username', 'full_name', 'profile_pic']
@@ -32,11 +37,11 @@ def do_excel(uid,date,opt_title,option,root_json):              # 跑生成excel
         id.append(users['full_name'])
         id.append(users['profile_pic_url']+'.jpg')
         ws.append(id)
-    wb.save(f'{uid}{date}{opt_title[option]}.xlsx')
+    wb.save(path+f'{uid}{date}{opt_title[option]}.xlsx')
 
-def do_txt(uid,date,opt_title,option,root_json):                # 跑生成txt 
+def do_txt(uid,date,opt_title,option,root_json,path):                # 跑生成txt 
     i=1
-    with open(f'{uid}{date}{opt_title[option]}.txt', 'w+',encoding='utf-8') as f:
+    with open(path+f'{uid}{date}{opt_title[option]}.txt', 'w+',encoding='utf-8') as f:
         for users in root_json['users']:
             # id = (f'{i}','@'+users['username'], users['full_name'])
             id = (f'@'+users['username'], users['full_name'])
@@ -56,12 +61,21 @@ def main():
         'optIntoOneTap': 'false'
     }
     uid = str(input('Enter id: '))
-    option = str(input('following/followers: '))
+    while True:
+        option = str(input('following[1]/followers[2]: '))
+        if(option == '1'):
+            option = 'following'
+            break
+        elif(option == '2'):
+            option = 'followers'
+            break
+        else:
+            print(f'enter 1 or 2 or following or followers!!!')
     fcount = str(input('Enter max num of following/followers: '))
     opt_title = {
         'following': 'fwi',
         'followers': 'fwr',}
-    ask = ask_excel('Excel file')
+    ask = ask_excel('Excel file(will have profile pic)')
     # print(ask)
     with requests.session() as session:         #session = requests.sess.....
         res = session.get(url)
@@ -87,14 +101,15 @@ def main():
         # print(response.text)
         root_json = response.json()
     if(ask == 1):
-        do_excel(uid,date,opt_title,option,root_json)
+        do_excel(uid,date,opt_title,option,root_json,path)
     # pprint(response.text)
-    do_txt(uid,date,opt_title,option,root_json)
+    do_txt(uid,date,opt_title,option,root_json,path)
     ask2 = ask_excel('compare with old file')
     if(ask2 == 1):
-        f1 = input(f'Enter first filename(older file): ')+'.txt'
-        f2 = f'{uid}{date}{opt_title[option]}'+'.txt'
+        f1 = path+input(f'Enter first filename(older file): ')+'.txt'
+        f2 = path+f'{uid}{date}{opt_title[option]}'+'.txt'
         compare.compare_file(f1, f2)
 
 if __name__ == '__main__':
+    create_folder(path)
     main()

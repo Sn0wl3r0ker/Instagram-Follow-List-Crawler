@@ -1,7 +1,13 @@
 import sys
 import difflib
+import os
+from config import path
 
 # modify from: https://www.cnblogs.com/yizhipanghu/p/9674221.html
+
+def create_folder(path):
+    if not os.path.isdir(path):
+        os.makedirs(path)
 
 # 讀取配置文件函數
 def read_file(file_name):
@@ -28,7 +34,7 @@ def compare_file(file1_name, file2_name):
     diff_print = [a for a in d.compare(text1_lines, text2_lines) if a[0] in print_list and a[-1] not in no_print_list ]
     if diff_print:
         print('record of compare will be storage in compared.txt and result.html !')
-        with open('compared.txt', 'w', encoding="utf-8") as result_file:
+        with open(path+'compared.txt', 'w', encoding="utf-8") as result_file:
             result_file.write('\n'.join(diff_print))
         print('\n'.join(diff_print))
     else:
@@ -37,13 +43,14 @@ def compare_file(file1_name, file2_name):
     result = diff.make_file(text1_lines, text2_lines)  # 通過make_file 方法輸出 html 格式的對比結果
     #  將結果保存到result.html文件中並打開
     try:
-        with open('result.html', 'w', encoding="utf-8") as result_file:      #同 f = open('result.html', 'w') 打開或創建一個result.html文件
+        with open(path+'result.html', 'w', encoding="utf-8") as result_file:      #同 f = open('result.html', 'w') 打開或創建一個result.html文件
             result_file.write(result)                      #同 f.write(result)
     except IOError as error:
         print('寫入html文件錯誤:{0}'.format(error))
 
 
 if __name__ == '__main__':
-    f1 = input(f'Enter first filename(older file): ')+'.txt'
-    f2 = input(f'Enter second filename(newer file): ')+'.txt'
+    create_folder(path)
+    f1 = path+input(f'Enter first filename(older file): ')+'.txt'
+    f2 = path+input(f'Enter second filename(newer file): ')+'.txt'
     compare_file(f1, f2)

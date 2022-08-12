@@ -33,9 +33,13 @@ def compare_file(file1_name, file2_name):
     diff_print = [a for a in d.compare(text1_lines, text2_lines) if a[0] in print_list and a[-1] not in no_print_list ]
     if diff_print:
         print('record of compare will be storage in compared.txt and result.html !')
-        with open(path+'compared.txt', 'w', encoding="utf-8") as result_file:
-            result_file.write('\n'.join(diff_print))
-        print('\n'.join(diff_print))
+        try:
+            with open(path+'compared.txt', 'w', encoding="utf-8") as result_file:
+                result_file.write('\n'.join(diff_print))
+            print('\n'.join(diff_print))
+        except IOError as error:
+            print('寫入compare.txt文件時發生錯誤:{0}'.format(error))
+
     else:
         print(f"It's all same as old file")
     diff = difflib.HtmlDiff()  # 創建htmldiff 對象

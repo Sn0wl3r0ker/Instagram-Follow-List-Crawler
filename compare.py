@@ -28,6 +28,8 @@ def compare_file(file1_name, file2_name):
     diff_print = [a for a in d.compare(text1_lines, text2_lines) if a[0] in print_list and a[2:6] not in no_print_list]
     if diff_print:
         print('\n'.join(diff_print[0:-2]))
+    else:
+        print(f"It's all same as old file")
     diff = difflib.HtmlDiff()  # 創建htmldiff 對象
     result = diff.make_file(text1_lines, text2_lines)  # 通過make_file 方法輸出 html 格式的對比結果
     #  將結果保存到result.html文件中並打開

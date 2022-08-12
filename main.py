@@ -5,13 +5,14 @@ import re
 from config import username,password,headers,url,ajax_url,p_url
 from datetime import datetime
 from openpyxl import Workbook
+import compare
 
-def ask_excel():
+def ask_excel(ask_option):
     flag =''
     yes_list = ['y','Y','yes']
     no_list = ['n','N','no']
     while flag not in yes_list and flag not in no_list:
-        flag = input(f'Do u want excel file? y/n: ')
+        flag = input(f'Do u want {ask_option} ? y/n: ')
         if(flag not in yes_list and flag not in no_list):
             print('plz enter y or n !!!')
     # print(f'flag={flag}')
@@ -60,7 +61,7 @@ def main():
     opt_title = {
         'following': 'fwi',
         'followers': 'fwr',}
-    ask = ask_excel()
+    ask = ask_excel('Excel file')
     # print(ask)
     with requests.session() as session:         #session = requests.sess.....
         res = session.get(url)
@@ -89,6 +90,11 @@ def main():
         do_excel(uid,date,opt_title,option,root_json)
     # pprint(response.text)
     do_txt(uid,date,opt_title,option,root_json)
+    ask2 = ask_excel('compare with old file')
+    if(ask2 == 1):
+        f1 = input(f'Enter first filename(older file): ')+'.txt'
+        f2 = input(f'Enter second filename(newer file): ')+'.txt'
+        compare.compare_file(f1, f2)
 
 if __name__ == '__main__':
     main()

@@ -22,6 +22,12 @@ def compare_file(file1_name, file2_name):
         sys.exit()
     text1_lines = read_file(file1_name)
     text2_lines = read_file(file2_name)
+    print_list = ['+','-']
+    no_print_list = ['Total']
+    d = difflib.Differ()
+    diff_print = [a for a in d.compare(text1_lines, text2_lines) if a[0] in print_list and a[2:6] not in no_print_list]
+    if diff_print:
+        print('\n'.join(diff_print[0:-2]))
     diff = difflib.HtmlDiff()  # 創建htmldiff 對象
     result = diff.make_file(text1_lines, text2_lines)  # 通過make_file 方法輸出 html 格式的對比結果
     #  將結果保存到result.html文件中並打開
@@ -33,6 +39,6 @@ def compare_file(file1_name, file2_name):
 
 
 if __name__ == '__main__':
-    f1 = input(f'Enter first filename: ')+'.txt'
-    f2 = input(f'Enter second filename: ')+'.txt'
+    f1 = input(f'Enter first filename(older file): ')+'.txt'
+    f2 = input(f'Enter second filename(newer file): ')+'.txt'
     compare_file(f1, f2)

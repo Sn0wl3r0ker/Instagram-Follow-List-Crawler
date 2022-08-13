@@ -1,7 +1,6 @@
 # from pprint import pprint
-from tabnanny import check
 from bs4 import BeautifulSoup
-import requests
+import requests, pickle
 import re
 from config import username,password,headers,url,ajax_url,p_url,path
 from datetime import datetime
@@ -88,28 +87,39 @@ def main():
         'followers': 'fwr',}
     ask = ask_excel('Excel file(will have profile pic)')
     # print(ask)
-    with requests.session() as session:         #session = requests.sess.....
-        res = session.get(url)
-        csrf = re.findall(r"csrf_token\":\"(.*?)\"",res.text)[0]
-        cookies = res.cookies                   #res獲取第一次cookie和csrf
-        cookies['csrf'] = csrf
-        headers['x-csrftoken'] = csrf
-        headers['Referer'] = f'https://www.instagram.com/{uid}/following/'
-        # print(cookies)
-        session.post(ajax_url, data=payload, headers=headers, cookies=cookies)          #用現有cookie和csrf token 去取得登入的session
+    with requests.session() as session:
+        if not os.path.exists(f'{path}{username}session.pkl'):
+            print('Getting sessions')      #session = requests.sess.....
+            res = session.get(url)
+            csrf = re.findall(r"csrf_token\":\"(.*?)\"",res.text)[0]
+            cookies = res.cookies                   #res獲取第一次cookie和csrf
+            cookies['csrf'] = csrf
+            headers['x-csrftoken'] = csrf
+            # headers['Referer'] = f'https://www.instagram.com/{uid}/following/'
+            # print(headers)
+            session.post(ajax_url, data=payload, headers=headers, cookies=cookies)  
+            with open(f'{path}{username}session.pkl', 'wb') as f:
+                pickle.dump(session.cookies, f)        #用現有cookie和csrf token 去取得登入的session
         # print(req2.text)
-
+        else:
+            print('Reloading sessions and updating cookies')
+            with open(f'{path}{username}session.pkl', 'rb') as f:
+                cookies = session.cookies.update(pickle.load(f))
+                headers['x-csrftoken'] = session.cookies['csrftoken']
+                # print(session.cookies)
+                # print(headers)
         fsi=session.get(p_url+uid,cookies=cookies,headers=headers)    
         # print(fsi.text)
         
         try:
-            # print(str(re.findall(r"id\":\"(.*?)\"",fsi.text)))
+            print(str(re.findall(r"id\":\"(.*?)\"",fsi.text)))
             friendid = str(re.findall(r"id\":\"(.*?)\"",fsi.text)[1])
             checkid = str(re.findall(r"id\":\"(.*?)\"",fsi.text)[-1])
             if(friendid == '236' or friendid == None or checkid == '236'):
                 raise Exception
             print(f"userid:{friendid}")
         except:
+            os.remove(f'{path}{username}session.pkl')
             print(f'error while checking userid')
             print(f'1.plz check the target username(no @)!!!')
             print(f'2.Make sure u set the right USERNAME and PASSWORD in *config.py* file!!!')

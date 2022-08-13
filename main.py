@@ -68,12 +68,10 @@ def main():
         else:
             break
     while True:
-        option = str(input('following[1]/followers[2]: '))
-        if(option == '1'):
-            option = 'following'
-            break
-        elif(option == '2'):
-            option = 'followers'
+        opt_list = {'':'following','1':'following','2':'followers','following':'following','followers':'followers'}
+        option = str(input('following[1]/followers[2] [1]: '))
+        if(option in opt_list):
+            option = opt_list[option]
             break
         else:
             print(f'enter 1 or 2 or following or followers!!!')
@@ -95,14 +93,15 @@ def main():
             cookies = res.cookies                   #res獲取第一次cookie和csrf
             cookies['csrf'] = csrf
             headers['x-csrftoken'] = csrf
-            # headers['Referer'] = f'https://www.instagram.com/{uid}/following/'
             # print(headers)
             session.post(ajax_url, data=payload, headers=headers, cookies=cookies)  
             with open(f'{path}{username}session.pkl', 'wb') as f:
                 pickle.dump(session.cookies, f)        #用現有cookie和csrf token 去取得登入的session
+            headers['Referer'] = f'https://www.instagram.com/{uid}/following/'
         # print(req2.text)
         else:
             print('Reloading sessions and updating cookies')
+            headers['Referer'] = f'https://www.instagram.com/{uid}/following/'
             with open(f'{path}{username}session.pkl', 'rb') as f:
                 cookies = session.cookies.update(pickle.load(f))
                 headers['x-csrftoken'] = session.cookies['csrftoken']
@@ -112,7 +111,7 @@ def main():
         # print(fsi.text)
         
         try:
-            print(str(re.findall(r"id\":\"(.*?)\"",fsi.text)))
+            # print(str(re.findall(r"id\":\"(.*?)\"",fsi.text)))
             friendid = str(re.findall(r"id\":\"(.*?)\"",fsi.text)[1])
             checkid = str(re.findall(r"id\":\"(.*?)\"",fsi.text)[-1])
             if(friendid == '236' or friendid == None or checkid == '236'):
@@ -129,7 +128,8 @@ def main():
         # url的後輟 可以像翻頁一樣去增加再爬取 或是直接爆max來爬取
         params = {
         'count': fcount,
-        'max_id': ''}
+        'max_id': '',
+        'search_surface': 'follow_list_page'}
         response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/', params=params, cookies=cookies, headers=headers)
         # print(response.text)
         try:

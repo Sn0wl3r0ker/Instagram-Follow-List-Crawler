@@ -26,11 +26,13 @@ def ask_excel(ask_option):
     elif(flag in no_list):
         return 0
 
-def do_excel(uid,date,opt_title,option,root_json,path):              # 跑生成excel
+def do_excel(path,filename,root_json):              # 跑生成excel
     wb = Workbook()
     ws = wb.active
     title = ['username', 'full_name', 'profile_pic']
     ws.append(title)
+    # yes_list = ['y','Y','yes','']
+    # no_list = ['n','N','no']
     for users in root_json['users']:
         id = []
         id.append('@'+users['username'])
@@ -38,11 +40,11 @@ def do_excel(uid,date,opt_title,option,root_json,path):              # 跑生成
         id.append(users['profile_pic_url']+'.jpg')
         id.append(f'Profile Pic')
         ws.append(id)
-    wb.save(path+f'{uid}{date}{opt_title[option]}.xlsx')
+    wb.save(path+filename+f'.xlsx')
 
-def do_txt(uid,date,opt_title,option,root_json,path):                # 跑生成txt 
+def do_txt(path,filename,root_json):                # 跑生成txt 
     i=1
-    with open(path+f'{uid}{date}{opt_title[option]}.txt', 'w+',encoding='utf-8') as f:
+    with open(path+filename+f'.txt', 'w+',encoding='utf-8') as f:
         for users in root_json['users']:
             # id = (f'{i}','@'+users['username'], users['full_name'])
             id = (f'@'+users['username'], users['full_name'])
@@ -84,6 +86,7 @@ def main():
     opt_title = {
         'following': 'fwi',
         'followers': 'fwr',}
+    filename = f'{uid}{date}{opt_title[option]}'
     ask = ask_excel('Excel file(will have profile pic)')
     # print(ask)
     with requests.session() as session:
@@ -141,18 +144,18 @@ def main():
             print(f'2.your account might block by instagram server, plz try again later or change your ip!!')
             sys.exit()
             
+    do_txt(path, filename, root_json)
     if(ask == 1):
         try:
-            do_excel(uid,date,opt_title,option,root_json,path)
+            do_excel(path,filename,root_json)
         except IOError as error:
             print(f'Error when generate Excel file:{error}')
     # pprint(response.text)
-    do_txt(uid,date,opt_title,option,root_json,path)
     ask2 = ask_excel('compare with old file')
     if(ask2 == 1):
         try:
             f1 = path+input(f'Enter first filename(older file): ')+'.txt'
-            f2 = path+f'{uid}{date}{opt_title[option]}'+'.txt'
+            f2 = path+filename+'.txt'
             compare.compare_file(f1, f2)
         except IOError as error:
             print(f'Error when generate compared.txt file:{error}')

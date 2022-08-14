@@ -162,5 +162,6 @@ if __name__ == '__main__':
     create_folder(path)
     if username == 'USERNAME or EMAIL':
         print(f'plz go config.py to set your USERNAME and PASSWORD')
+        print(f'If you already have session.pkl you can only set USERNAME')
         os._exit(0)
     main()

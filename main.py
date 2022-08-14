@@ -36,6 +36,7 @@ def do_excel(uid,date,opt_title,option,root_json,path):              # 跑生成
         id.append('@'+users['username'])
         id.append(users['full_name'])
         id.append(users['profile_pic_url']+'.jpg')
+        id.append(f'Profile Pic')
         ws.append(id)
     wb.save(path+f'{uid}{date}{opt_title[option]}.xlsx')
 

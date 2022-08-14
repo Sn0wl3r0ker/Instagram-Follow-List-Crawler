@@ -25,5 +25,6 @@ lab:
 Set Pshp = Nothing
 Range("C2").Select
 Next
+Columns("C").Hidden = True
 Application.ScreenUpdating = True
 End Sub

@@ -5,8 +5,11 @@ import re
 from config import username,password,headers,url,ajax_url,p_url,path
 from datetime import datetime
 from openpyxl import Workbook
-import compare
+import compare, urlToPic
 import os, sys
+# import platform
+
+# system = platform.system()
 
 def create_folder(path):
     if not os.path.isdir(path):
@@ -29,18 +32,28 @@ def ask_excel(ask_option):
 def do_excel(path,filename,root_json):              # 跑生成excel
     wb = Workbook()
     ws = wb.active
-    title = ['username', 'full_name', 'profile_pic']
+    title = ['username', 'full_name', 'profile_pic_url', 'Profile_Pic']
     ws.append(title)
-    # yes_list = ['y','Y','yes','']
-    # no_list = ['n','N','no']
+    yes_list = ['y','Y','yes','']
+    no_list = ['n','N','no']
     for users in root_json['users']:
         id = []
         id.append('@'+users['username'])
         id.append(users['full_name'])
         id.append(users['profile_pic_url']+'.jpg')
-        id.append(f'Profile Pic')
         ws.append(id)
     wb.save(path+filename+f'.xlsx')
+    while True:
+        ask3 = input(f'Do u want to transfer profile pic url to pics? It might *take more time*![y/n] [y]: ')
+        if ask3 in yes_list:
+            print(f'start getting pic files!!!')
+            urlToPic.urlToPic(filename)
+            break
+        elif ask3 in no_list:
+            break
+        else:
+            print(f'plz enter y or n or empty to default!')    
+
 
 def do_txt(path,filename,root_json):                # 跑生成txt 
     i=1

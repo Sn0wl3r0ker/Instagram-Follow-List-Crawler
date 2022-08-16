@@ -97,12 +97,12 @@ class urlToPic:
         input(f'Press [enter] to start macro!!!: ')
         #解決 appscript time out 問題  run_VB_macro在Apple event timed out.報錯中找到
         #類似 https://github.com/xlwings/xlwings/issues/1955 問題，找api模組使用方法 win用pywin32 mac使用appscript!
+        print(f'Excel will looks like freezing! It\'s normal on mac!!!\nrunning plz wait!')
         app.api.run_VB_macro(('module1.URLPictureInsert'),timeout=3000)
         # macro = wb.macro('module1.URLPictureInsert')
         # macro()
         # print(f'If you get the alert"Apple Event Timeout (-1712)" it\'s because there are too many pics to get and apple event timeout')
         # print(f'plz find aeosa/appscript/reference.py in your environment and set timeout 0 or 3000!!!')
-        print(f'Excel will looks like freezing! It\'s normal on mac!!')
         input(f'Press [enter] to kill excel!!!: ')
         # print('3')
         # wb.save(os.path.abspath('data/'+filename2+'pic2.xlsm'))

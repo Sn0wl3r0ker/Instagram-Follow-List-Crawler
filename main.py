@@ -4,12 +4,11 @@ import requests, pickle
 import re
 from config import username,password,headers,url,ajax_url,p_url,path
 from datetime import datetime
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 import compare, urlToPic
-import os, sys
-# import platform
+import os, sys, time
+import platform
 
-# system = platform.system()
 
 def create_folder(path):
     if not os.path.isdir(path):
@@ -28,14 +27,25 @@ def ask_excel(ask_option):
         return 1
     elif(flag in no_list):
         return 0
+def ask_url_to_pic():
+    ask3 = []
+    yes_list = ['y','Y','yes','']
+    no_list = ['n','N','no']
+    while ask3 not in yes_list and ask3 not in no_list:
+        ask3 = input(f'Do u want to transfer profile pic url to pics? It might *take more time*![y/n] [y]: ')
+        if ask3 in yes_list:
+            print(f'start getting pic files!!!')
+            return 1
+        elif ask3 in no_list:
+            return 0
+        else:
+            print(f'plz enter y or n or empty to default!')
 
 def do_excel(path,filename,root_json):              # 跑生成excel
     wb = Workbook()
     ws = wb.active
     title = ['username', 'full_name', 'profile_pic_url', 'Profile_Pic']
     ws.append(title)
-    yes_list = ['y','Y','yes','']
-    no_list = ['n','N','no']
     for users in root_json['users']:
         id = []
         id.append('@'+users['username'])
@@ -43,16 +53,29 @@ def do_excel(path,filename,root_json):              # 跑生成excel
         id.append(users['profile_pic_url']+'.jpg')
         ws.append(id)
     wb.save(path+filename+f'.xlsx')
-    while True:
-        ask3 = input(f'Do u want to transfer profile pic url to pics? It might *take more time*![y/n] [y]: ')
-        if ask3 in yes_list:
-            print(f'start getting pic files!!!')
-            urlToPic.urlToPic(filename)
-            break
-        elif ask3 in no_list:
-            break
-        else:
-            print(f'plz enter y or n or empty to default!')    
+    
+
+def do_excel_mac(path,filename,root_json):
+    if ask_url_to_pic() == 1:
+        urlToPic.urlToPic.urlToPicinit(filename)
+        time.sleep(3)
+        print(f'waiting 3 seconds!')
+        wb = load_workbook(os.path.abspath(path+filename+'pic.xlsm'), read_only=False, keep_vba=True)
+        ws = wb.active
+        title = ['username', 'full_name', 'profile_pic_url', 'Profile_Pic']
+        ws.append(title)
+        for users in root_json['users']:
+            id = []
+            id.append('@'+users['username'])
+            id.append(users['full_name'])
+            id.append(users['profile_pic_url']+'.jpg')
+            ws.append(id)
+        wb.save(path+filename+f'pic.xlsm')
+        time.sleep(2)
+        urlToPic.urlToPic.urlToPicMac(filename)
+    else:
+        do_excel(path,filename,root_json)
+
 
 
 def do_txt(path,filename,root_json):                # 跑生成txt 
@@ -68,6 +91,7 @@ def do_txt(path,filename,root_json):                # 跑生成txt
     print(f'Got {i-1} records!!!')
 
 def main():
+    system = platform.system()
     date = datetime.now().strftime("%Y%m%d-%H%M")
     time = int(datetime.now().timestamp())
     payload = {
@@ -158,11 +182,19 @@ def main():
             sys.exit()
             
     do_txt(path, filename, root_json)
-    if(ask == 1):
+    if(ask == 1 and system == 'Windows'):
         try:
             do_excel(path,filename,root_json)
+            askUtoP = ask_url_to_pic()
+            if askUtoP == 1:
+                urlToPic.urlToPic.urlToPicWin(filename)
         except IOError as error:
             print(f'Error when generate Excel file:{error}')
+    elif (ask == 1 and system == 'Darwin'):
+        # try:
+        do_excel_mac(path,filename,root_json)
+        # except IOError as error:
+        #     print(f'Error when generate Excel file:{error}')
     # pprint(response.text)
     ask2 = ask_excel('compare with old file')
     if(ask2 == 1):

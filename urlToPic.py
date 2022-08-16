@@ -74,18 +74,35 @@ class urlToPic:
         # workbook = xlsxwriter.Workbook(os.path.abspath('data/'+filename+'pic.xlsm'))
         # workbook.add_vba_project(os.path.abspath('./vbaProject.bin'))
         # workbook.close()
-        app = xw.App(visible=True)
-        wb = app.books.open(os.path.abspath(r'data/'+filename+r'pic.xlsm'))
+        """
+        app = xw.App(visible=True,add_book=False)
         app.api(timeout=6000)
+        app.display_alerts =False
+        app.screen_updating =False
+        wb = app.books.open(os.path.abspath(r'data/'+filename+r'pic.xlsm'))
+        # wb = app.books.open(os.path.abspath(r'data/'+filename+r'pic.xlsm'),timeout=6000)
         print(f'start running! plz wait!')
         time.sleep(3)
         macro = wb.macro('module1.URLPictureInsert')
-        # print('2')
+        macro()"""
+
+        app = xw.App(visible=True)
+        # app.activate(steal_focus=True)
+        # app.display_alerts =False
+        # app.screen_updating =False
+        # app.api(timeout=31)
+        wb = app.books.open(os.path.abspath(r'data/'+filename+r'pic.xlsm'))
+        print(f'start running! plz wait!')
+        time.sleep(3)
         input(f'Press [enter] to start macro!!!: ')
-        print(f'If you get the alert"Apple Event Timeout (-1712)" it\'s because there are too many pics to get and applescript timeout')
-        print(f'plz find aeosa/appscript/reference.py in your environment and set timeout to at least 3000!!!')
+        #解決 appscript time out 問題  run_VB_macro在Apple event timed out.報錯中找到
+        #類似 https://github.com/xlwings/xlwings/issues/1955 問題，找api模組使用方法 win用pywin32 mac使用appscript!
+        app.api.run_VB_macro(('module1.URLPictureInsert'),timeout=3000)
+        # macro = wb.macro('module1.URLPictureInsert')
+        # macro()
+        # print(f'If you get the alert"Apple Event Timeout (-1712)" it\'s because there are too many pics to get and apple event timeout')
+        # print(f'plz find aeosa/appscript/reference.py in your environment and set timeout 0 or 3000!!!')
         print(f'Excel will looks like freezing! It\'s normal on mac!!')
-        macro()
         input(f'Press [enter] to kill excel!!!: ')
         # print('3')
         # wb.save(os.path.abspath('data/'+filename2+'pic2.xlsm'))

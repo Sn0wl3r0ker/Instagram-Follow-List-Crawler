@@ -1,6 +1,5 @@
 import platform
 from socket import timeout
-from tkinter.filedialog import SaveAs
 if platform.system() == 'Windows':
     import win32com.client as win32
 import time, os
@@ -10,6 +9,7 @@ from config import vba_code
 import xlwings as xw
 import xlsxwriter
 from openpyxl import workbook, load_workbook
+from openpyxl_image_loader import SheetImageLoader
 
 class urlToPic:
     def urlToPicWin(filename):
@@ -94,7 +94,7 @@ class urlToPic:
         wb = app.books.open(os.path.abspath(r'data/'+filename+r'pic.xlsm'))
         print(f'start running! plz wait!')
         time.sleep(3)
-        input(f'Press [enter] to start macro!!!: ')
+        input(f'Press [enter] to start VBA module!!!: ')
         #解決 appscript time out 問題  run_VB_macro在Apple event timed out.報錯中找到
         #類似 https://github.com/xlwings/xlwings/issues/1955 問題，找api模組使用方法 win用pywin32 mac使用appscript!
         print(f'Excel will looks like freezing! It\'s normal on mac!!!\nrunning plz wait!')
@@ -114,11 +114,13 @@ class urlToPic:
         wb.close()
         app.kill()
         wb = None
-        print(f'Finished! You have to convert xlsm to xlsx manually on mac!')
+        print(f'Finished! You have to *convert xlsm to xlsx manually* on mac!')
+        print(f'If Excel ask u to run after open xlsm file, just diable it')
+        print(f'You don\'t need to run vba anymore!! ')
         # input(f'Press [enter] to continue!!!: ')
         # print(f'removing VBA code!')
         # time.sleep(5)
         
-        # wb = load_workbook(os.path.abspath('data/'+filename+'pic.xlsm'),read_only=False,keep_vba=False)
-        # wb.save(os.path.abspath(r'data/'+filename+'pic.xlsm'))
+        # wb = load_workbook(os.path.abspath('data/'+filename+'pic.xlsm'),keep_vba=False)
+        # wb.save(os.path.abspath(r'data/'+filename+'pic.xlsx'))
         # os.remove(os.path.abspath('data/'+filename+'pic.xlsm'))

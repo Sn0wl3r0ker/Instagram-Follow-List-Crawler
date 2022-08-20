@@ -1,8 +1,7 @@
-bs4 == 4.11.1
+bs4 == 0.0.1
 openpyxl == 3.0.10
 pywin32 == 304
 requests == 2.28.1
 xlsxwriter == 3.0.3
 xlwings == 0.27.12
-win32compat == 221.26; platform_system == "Windows"
-win32ext == 221.2; platform_system == "Windows"
+pywin32 == 304; platform_system == "Windows"

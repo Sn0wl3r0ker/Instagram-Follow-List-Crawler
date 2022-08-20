@@ -8,8 +8,7 @@ from config import vba_code
 # import win32con
 import xlwings as xw
 import xlsxwriter
-from openpyxl import workbook, load_workbook
-from openpyxl_image_loader import SheetImageLoader
+# from openpyxl import workbook, load_workbook
 
 class urlToPic:
     def urlToPicWin(filename):

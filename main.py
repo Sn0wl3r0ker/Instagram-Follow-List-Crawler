@@ -142,6 +142,7 @@ def main():
         # print(req2.text)
         else:
             print('Reloading sessions and updating cookies')
+            print('If can\'t get all the records, plz delete session.pkl file and try again later!')
             headers['Referer'] = f'https://www.instagram.com/{uid}/following/'
             with open(f'{path}{username}session.pkl', 'rb') as f:
                 cookies = session.cookies.update(pickle.load(f))
@@ -172,7 +173,8 @@ def main():
         'max_id': '',
         'search_surface': 'follow_list_page'}
         response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/', params=params, cookies=cookies, headers=headers)
-        # print(response.text)
+        # with open('debug.txt','w+', encoding='utf-8') as f:
+        #     f.write(response.text)
         try:
             root_json = response.json()
         except requests.exceptions.JSONDecodeError as jsonError:

@@ -222,6 +222,7 @@ def main():
                 print(f'2.your account might block by instagram server, plz try again later or change your ip!!')
                 sys.exit()
             c+=200
+            print(f'getting {c-200}~{c} records!')
         with open(path+'root_json.txt', 'w+', encoding='utf-8') as jf:
             jf.write(str(root_json))
             # print(f'x:{c}')

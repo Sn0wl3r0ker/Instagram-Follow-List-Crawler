@@ -7,7 +7,7 @@ from config import username,password,headers,url,ajax_url,p_url,path
 from datetime import datetime
 from openpyxl import Workbook, load_workbook
 import compare, urlToPic
-import os, sys, time, json
+import os, sys, time
 import platform
 
 

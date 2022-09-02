@@ -193,16 +193,15 @@ def main():
         # 'count': fcount,
         # 'max_id': '200'}
         # response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/', params=params, cookies=cookies, headers=headers, timeout=300)
-        i=0
-        print_flag=0
-        if fcount % 200!=0:
-            ffcount = int((fcount//200+1)*200)
-        else:
-            ffcount = fcount
-        print(f'ffcount={ffcount}')
+        # print_flag=0
+        # if fcount % 200!=0:
+        #     ffcount = int((fcount//200+1)*200)
+        # else:
+        #     ffcount = fcount
+        # print(f'ffcount={ffcount}')
         c = 0
         while c <= fcount:
-            print(f'c={c}')
+            # print(f'c={c}')
             if c == 0:
                 response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/?count=200&search_surface=follow_list_page', cookies=cookies, headers=headers, timeout=300)
             else:
@@ -232,10 +231,9 @@ def main():
     if(ask == 1 and system == 'Windows'):
         try:
             do_excel(path,filename,root_json)
-            if print_flag == 1:
-                askUtoP = ask_url_to_pic()
-                if askUtoP == 1:
-                    urlToPic.urlToPic.urlToPicWin(filename)
+            askUtoP = ask_url_to_pic()
+            if askUtoP == 1:
+                urlToPic.urlToPic.urlToPicWin(filename)
         except IOError as error:
             print(f'Error when generate Excel file:{error}')
     elif (ask == 1 and system == 'Darwin'):

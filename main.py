@@ -1,4 +1,5 @@
 # from pprint import pprint
+from logging import root
 from bs4 import BeautifulSoup
 import requests, pickle
 import re
@@ -76,19 +77,38 @@ def do_excel_mac(path,filename,root_json):
     else:
         do_excel(path,filename,root_json)
 
-
-
 def do_txt(path,filename,root_json):                # 跑生成txt 
     i=1
     with open(path+filename+f'.txt', 'w+',encoding='utf-8') as f:
         for users in root_json['users']:
             # id = (f'{i}','@'+users['username'], users['full_name'])
+            # print(type(users))
+            # print(f'!!!{users}!!!')
             id = (f'@'+users['username'], users['full_name'])
             i+=1
         # reresponse = response.text.replace('\\u0026','&')
             f.write(str(id)+'\n')
         f.write(f'Total: {i-1} records!')
     print(f'Got {i-1} records!!!')
+
+# def do_txt(path,filename,root_json,print_flag):                # 跑生成txt 
+#     i=1
+#     with open(path+filename+f'.txt', 'a+',encoding='utf-8') as f:
+#         for users in root_json['users']:
+#             # id = (f'{i}','@'+users['username'], users['full_name'])
+#             id = (f'@'+users['username'], users['full_name'])
+#             i+=1
+#         # reresponse = response.text.replace('\\u0026','&')
+#             f.write(str(id)+'\n')
+#     if print_flag == 1:
+#         with open(path+filename+f'.txt', 'r') as f:
+#             # for count_line, line in enumerate(f):
+#             #     pass
+#             count_line = len(f.readlines())
+#             print(f'Got {count_line} records!!!')
+#         with open(path+filename+f'.txt', 'a+',encoding='utf-8') as f:
+#             f.write(f'Total: {count_line} records!')
+
 
 def main():
     system = platform.system()
@@ -116,9 +136,10 @@ def main():
         else:
             print(f'enter 1 or 2 or following or followers!!!')
     try:
-        fcount = int(input('Enter max num of following/followers [2000]: '))
+        fcount = int(input('Enter target\'s max num of following/followers : '))
     except ValueError:
-        fcount = 2000
+        print(f'plz enter the correct number!!!')
+        sys.exit()
 
     opt_title = {
         'following': 'fwi',
@@ -160,7 +181,7 @@ def main():
                 raise Exception
             print(f"userid:{friendid}")
         except:
-            os.remove(f'{path}{username}session.pkl')
+            # os.remove(f'{path}{username}session.pkl')
             print(f'error while checking userid')
             print(f'1.plz check the target username(no @)!!!')
             print(f'2.Make sure u set the right USERNAME and PASSWORD in *config.py* file!!!')
@@ -168,22 +189,46 @@ def main():
             sys.exit()
 
         # url的後輟 可以像翻頁一樣去增加再爬取 或是直接爆max來爬取
-        params = {
-        'count': fcount,
-        'max_id': '',
-        'search_surface': 'follow_list_page'}
-        response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/', params=params, cookies=cookies, headers=headers)
-        # with open('debug.txt','w+', encoding='utf-8') as f:
-        #     f.write(response.text)
-        try:
-            root_json = response.json()
-        except requests.exceptions.JSONDecodeError as jsonError:
-            print(f'Error when processing json file: {jsonError}')
-            print(f'1.Make sure u set the right USERNAME and PASSWORD in *config.py* file!!!')
-            print(f'2.your account might block by instagram server, plz try again later or change your ip!!')
-            sys.exit()
-            
-    do_txt(path, filename, root_json)
+        # params = {
+        # 'count': fcount,
+        # 'max_id': '200'}
+        # response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/', params=params, cookies=cookies, headers=headers, timeout=300)
+        # print_flag=0
+        # if fcount % 200!=0:
+        #     ffcount = int((fcount//200+1)*200)
+        # else:
+        #     ffcount = fcount
+        # print(f'ffcount={ffcount}')
+        c = 0
+        while c <= fcount:
+            # print(f'c={c}')
+            if c == 0:
+                response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/?count=200&search_surface=follow_list_page', cookies=cookies, headers=headers, timeout=300)
+            else:
+                response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/?count=200&max_id={c}&search_surface=follow_list_page', cookies=cookies, headers=headers, timeout=300)
+            # with open('debug.txt','a+', encoding='utf-8') as f:
+            #     f.write(response.text)
+            try:
+                if c == 0:
+                    root_json = dict(response.json())
+                    # print(f'FIRST:{root_json}')
+                else:
+                    main_json = dict(response.json())
+                    root_json['users']+=(main_json['users'])
+                    # print(f'SECOND:{root_json}')
+            except requests.exceptions.JSONDecodeError as jsonError:
+                print(f'Error when processing json file: {jsonError}')
+                print(f'1.Make sure u set the right USERNAME and PASSWORD in *config.py* file!!!')
+                print(f'2.your account might block by instagram server, plz try again later or change your ip!!')
+                sys.exit()
+            c+=200
+            print(f'getting {c-200}~{c} records!')
+        with open(path+'root_json.txt', 'w+', encoding='utf-8') as jf:
+            jf.write(str(root_json))
+            # print(f'x:{c}')
+            # if c == ffcount:
+            #     print_flag = 1
+        do_txt(path, filename, root_json)
     if(ask == 1 and system == 'Windows'):
         try:
             do_excel(path,filename,root_json)

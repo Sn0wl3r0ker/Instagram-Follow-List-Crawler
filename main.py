@@ -1,12 +1,9 @@
-# from pprint import pprint
-from logging import root
-from bs4 import BeautifulSoup
 import requests, pickle
 import re
 from config import username,password,headers,url,ajax_url,p_url,path
 from datetime import datetime
 from openpyxl import Workbook, load_workbook
-import compare, urlToPic
+import compare, urlToPic, sort
 import os, sys, time
 import platform
 
@@ -88,8 +85,16 @@ def do_txt(path,filename,root_json):                # 跑生成txt
             i+=1
         # reresponse = response.text.replace('\\u0026','&')
             f.write(str(id)+'\n')
-        f.write(f'Total: {i-1} records!')
+        f.write(f'Total: {i-1} records!\n')
     print(f'Got {i-1} records!!!')
+    flag = ask_excel('Do u need sort data for compare?[y/n]: ')
+    if flag == 1:
+        try:
+            print('Sorting files!')
+            sort.sorted_to_compare(path+filename+f'.txt')
+        except:
+            print('Sort ERROR~ plz try to use sort.py manually!!!')
+            sys.exit()
 
 # def do_txt(path,filename,root_json,print_flag):                # 跑生成txt 
 #     i=1

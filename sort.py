@@ -1,10 +1,10 @@
 from config import path
 
 def sorted_to_compare(f1):
-    with open(f1, 'r') as r1:
+    with open(f1, 'r', encoding="utf-8") as r1:
         word1 = r1.readlines()
     Total = word1[-1]
-    with open(f1, 'w+', encoding='utf-8') as c1:
+    with open(f1, 'w+', encoding="utf-8") as c1:
         # c1.writelines(sorted(word1, key=lambda word1: (word1.split('\n')[-1][3:-1])))
         c1.writelines(sorted(word1[0:-1]))
         c1.writelines(Total)

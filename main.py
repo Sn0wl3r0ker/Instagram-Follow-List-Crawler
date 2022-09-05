@@ -92,8 +92,9 @@ def do_txt(path,filename,root_json):                # 跑生成txt
         try:
             print('Sorting files!')
             sort.sorted_to_compare(path+filename+f'.txt')
-        except:
+        except UnicodeDecodeError as error:
             print('Sort ERROR~ plz try to use sort.py manually!!!')
+            print(f'ERROR: {error}')
             sys.exit()
 
 # def do_txt(path,filename,root_json,print_flag):                # 跑生成txt 

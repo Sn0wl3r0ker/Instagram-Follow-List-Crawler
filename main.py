@@ -162,7 +162,7 @@ def main():
             res = session.get(url)
             # with open('res.txt','a+', encoding='utf-8') as f:
             #     f.write(res.text)
-            csrf = re.findall(r"csrf_token\\\":\\\"(.*?)\\\"",res.text)[0]
+            csrf = re.findall(r"csrf_token\":\"(.*?)\"}",res.text)[0]
             print(f'csrf={csrf}')
             # jazoest = re.findall(r"jazoest=(.*?)\"",res.text)[0]
             # print(f'jazoest={jazoest}')

@@ -1,0 +1,13 @@
+1. 改用POST show_many/ (x)
+2. 檢查記數器顯示c 
+3. 搞定followers問題
+4. 改非問答式 自行輸入參數 包括帳密
+5. 未來加入pandas numpy資料處理
+6. 加入proxy
+
+change_log: 
+1. 修正找csrf的正則表達式、命名方式、修正json檔擷取index
+2. 改user-agent
+3. headers修改
+4. environment.yml修正錯誤 (創環境指令 conda create env -f environment.yml)
+5. 修改大量爬取方式，改找next_max_id

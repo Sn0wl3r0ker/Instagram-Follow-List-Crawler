@@ -5,30 +5,28 @@ channels:
 dependencies:
   - beautifulsoup4=4.11.1=pyha770c72_0
   - bs4=4.11.1=hd8ed1ab_0
-  - bzip2=1.0.8=h0d85af4_4
-  - ca-certificates=2022.6.15=h033912b_0
+  - bzip2=1.0.8
+  - ca-certificates=2022.6.15
   - charset-normalizer=2.1.0=pyhd8ed1ab_0
   - et_xmlfile=1.0.1=py_1001
   - idna=3.3=pyhd8ed1ab_0
-  - libffi=3.4.2=h0d85af4_5
-  - libzlib=1.2.12=hfe4f2af_2
-  - ncurses=6.3=h96cf925_1
-  - openssl=3.0.5=hb81d4ab_1
+  - libffi=3.4.2
+  - libzlib=1.2.12
+  - openssl=3.0.5
   - pip=22.2.2=pyhd8ed1ab_0
   - pycparser=2.21=pyhd8ed1ab_0
   - pyopenssl=22.0.0=pyhd8ed1ab_0
-  - python=3.10.5=hdd68b96_0_cpython
+  - python=3.10.5
   - python_abi=3.10=2_cp310
-  - readline=8.1.2=h3899abd_0
   - requests=2.28.1=pyhd8ed1ab_0
   - soupsieve=2.3.2.post1=pyhd8ed1ab_0
-  - sqlite=3.39.2=hd9f0692_0
-  - tk=8.6.12=h5dbffcc_0
+  - sqlite=3.39.2
+  - tk=8.6.12
   - tzdata=2022a=h191b570_0
   - urllib3=1.26.11=pyhd8ed1ab_0
   - wheel=0.37.1=pyhd8ed1ab_0
-  - xz=5.2.5=haf1e3a3_1
-  - zlib=1.2.12=hfe4f2af_2
+  - xz=5.2.5
+  - zlib=1.2.12
   - pip:
     - brotlipy==0.7.0
     - certifi==2022.6.15

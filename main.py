@@ -119,13 +119,16 @@ def do_txt(path,filename,root_json):                # 跑生成txt
 def main():
     system = platform.system()
     date = datetime.now().strftime("%Y%m%d-%H%M")
-    time = int(datetime.now().timestamp())
+    timestamp = int(datetime.now().timestamp())
     payload = {
         'username': f'{username}',
-        'enc_password': f'#PWD_INSTAGRAM_BROWSER:0:{time}:{password}',
+        'enc_password': f'#PWD_INSTAGRAM_BROWSER:0:{timestamp}:{password}',
         'queryParams': {},
-        'optIntoOneTap': 'false'
+        'optIntoOneTap': 'false',
+        'stopDeletionNonce': '',
+        'trustedDeviceRecords': {}
     }
+    # print(payload)
     print(f'If target is private account, you have to follow it first!!!')
     while True:
         uid = str(input('Enter id: '))
@@ -157,12 +160,18 @@ def main():
         if not os.path.exists(f'{path}{username}session.pkl'):
             print('Getting sessions')      #session = requests.sess.....
             res = session.get(url)
-            csrf = re.findall(r"csrf_token\":\"(.*?)\"",res.text)[0]
+            # with open('res.txt','a+', encoding='utf-8') as f:
+            #     f.write(res.text)
+            csrf = re.findall(r"csrf_token\\\":\\\"(.*?)\\\"",res.text)[0]
+            print(f'csrf={csrf}')
+            # jazoest = re.findall(r"jazoest=(.*?)\"",res.text)[0]
+            # print(f'jazoest={jazoest}')
             cookies = res.cookies                   #res獲取第一次cookie和csrf
-            cookies['csrf'] = csrf
+            cookies['csrftoken'] = csrf
             headers['x-csrftoken'] = csrf
-            # print(headers)
-            session.post(ajax_url, data=payload, headers=headers, cookies=cookies)  
+            # print("\n",headers,"\n")
+            r = session.post(ajax_url, data=payload, headers=headers, cookies=cookies)
+            print(r.status_code)
             with open(f'{path}{username}session.pkl', 'wb') as f:
                 pickle.dump(session.cookies, f)        #用現有cookie和csrf token 去取得登入的session
             headers['Referer'] = f'https://www.instagram.com/{uid}/following/'
@@ -174,15 +183,18 @@ def main():
             with open(f'{path}{username}session.pkl', 'rb') as f:
                 cookies = session.cookies.update(pickle.load(f))
                 headers['x-csrftoken'] = session.cookies['csrftoken']
-                # print(session.cookies)
-                # print(headers)
-        fsi=session.get(p_url+uid,cookies=cookies,headers=headers)    
-        # print(fsi.text)
+                # print("\n",session.cookies)
+                # print("\n",headers)
+        fsi=session.get(p_url+uid,cookies=cookies,headers=headers)
+        print(f'status: {fsi.status_code}')
+        # with open('fsi.txt','a+', encoding='utf-8') as f:
+        #         f.write(fsi.text)
+        # print("\n",fsi.text)
         
         try:
             # print(str(re.findall(r"id\":\"(.*?)\"",fsi.text)))
-            friendid = str(re.findall(r"id\":\"(.*?)\"",fsi.text)[1])
-            checkid = str(re.findall(r"id\":\"(.*?)\"",fsi.text)[-1])
+            friendid = str(re.findall(r"\"id\":\"(.*?)\"",fsi.text)[0])
+            checkid = str(re.findall(r"\"id\":\"(.*?)\"",fsi.text)[-1])
             if(friendid == '236' or friendid == None or checkid == '236'):
                 raise Exception
             print(f"userid:{friendid}")
@@ -209,9 +221,10 @@ def main():
         while c <= fcount:
             # print(f'c={c}')
             if c == 0:
-                response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/?count=200&search_surface=follow_list_page', cookies=cookies, headers=headers, timeout=300)
+                response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/?count=100&search_surface=follow_list_page', cookies=cookies, headers=headers)
             else:
-                response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/?count=200&max_id={c}&search_surface=follow_list_page', cookies=cookies, headers=headers, timeout=300)
+                response = session.get(f'https://i.instagram.com/api/v1/friendships/{friendid}/{option}/?count=100&max_id={max_id}&search_surface=follow_list_page', cookies=cookies, headers=headers)
+            time.sleep(3)
             # with open('debug.txt','a+', encoding='utf-8') as f:
             #     f.write(response.text)
             try:
@@ -227,10 +240,19 @@ def main():
                 print(f'1.Make sure u set the right USERNAME and PASSWORD in *config.py* file!!!')
                 print(f'2.your account might block by instagram server, plz try again later or change your ip!!')
                 sys.exit()
-            c+=200
-            print(f'getting {c-200}~{c} records!')
-        with open(path+'root_json.txt', 'w+', encoding='utf-8') as jf:
-            jf.write(str(root_json))
+            c+=100
+            print(f'getting {c-100}~{c} records!')
+            try:
+                max_id = str(re.findall(r"\"next_max_id\":\"(.*?)\"",response.text)[-1])
+                print(f'next_max_id={max_id}')
+            except IndexError:
+               finish = str(re.findall(r"\"has_more\":(.*?),",response.text)[-1])
+               if(finish == 'false'):
+                   break
+            # show_many = session.post(f'https://i.instagram.com/api/v1/friendships/show_many/', cookies=cookies, headers=headers)
+            # print(f'show_many:{show_many.status_code}')
+        # with open(path+'root_json.txt', 'w+', encoding='utf-8') as jf:
+        #     jf.write(str(root_json))
             # print(f'x:{c}')
             # if c == ffcount:
             #     print_flag = 1
